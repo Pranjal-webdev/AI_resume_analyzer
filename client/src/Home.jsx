@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import "./App.css";
 
 function Home() {
@@ -9,7 +10,9 @@ function Home() {
         <div className="nav-links">
           <a href="#features">Features</a>
           <a href="#how-it-works">How It Works</a>
-          <button className="nav-btn">Get Started</button>
+          <Link to="/upload" className="nav-btn">
+            Get Started
+          </Link>
         </div>
       </nav>
 
@@ -28,9 +31,9 @@ function Home() {
           </p>
 
           <div className="hero-buttons">
-            <button className="primary-btn">
+            <Link to="/upload" className="primary-btn">
               Analyze My Resume →
-            </button>
+            </Link>
 
             <a href="#features" className="secondary-btn">
               Explore Features

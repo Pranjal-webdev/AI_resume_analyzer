@@ -1,9 +1,11 @@
 import { useState } from "react";
 import "./UploadResume.css";
+import { useNavigate } from "react-router-dom";
 
 function UploadResume() {
   const [file, setFile] = useState(null);
   const [jobDescription, setJobDescription] = useState("");
+  const navigate = useNavigate();
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
@@ -30,7 +32,7 @@ function UploadResume() {
       return;
     }
 
-    alert("Resume uploaded! AI analysis will be added next.");
+    navigate("/results");
   };
 
   return (

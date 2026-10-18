@@ -1,14 +1,17 @@
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./Home";
 import UploadResume from "./UploadResume";
 import AnalysisResult from "./AnalysisResult";
 
 function App() {
   return (
-    <>
-      <Home />;
-      <UploadResume />
-      <AnalysisResult />
-    </>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/upload" element={<UploadResume />} />
+        <Route path="/results" element={<AnalysisResult />} />
+      </Routes>
+    </BrowserRouter>
   )
 }
 
