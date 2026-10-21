@@ -181,3 +181,19 @@
     padding: 22px 17px;
   }
 }
+
+.upload-error {
+  margin-top: 18px;
+  padding: 12px;
+  background: #fff0f0;
+  color: #d92d35;
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.analyze-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
