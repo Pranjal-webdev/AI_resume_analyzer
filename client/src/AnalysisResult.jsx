@@ -1,124 +1,51 @@
+import { useLocation, useNavigate } from "react-router-dom";
 import "./AnalysisResult.css";
 
 function AnalysisResult() {
-  const matchedSkills = [
-    "JavaScript",
-    "React",
-    "HTML",
-    "CSS",
-    "Git",
-  ];
+  const location = useLocation();
+  const navigate = useNavigate();
 
-  const missingSkills = [
-    "TypeScript",
-    "Testing",
-    "Next.js",
-  ];
+  const { resumeText, fileName, jobDescription } = location.state || {};
 
-  const suggestions = [
-    "Add measurable achievements to your work experience.",
-    "Include keywords from the job description in your resume.",
-    "Highlight your projects and the technologies you used.",
-  ];
+  if (!resumeText) {
+    return (
+      <div className="result-container">
+        <h2>No Resume Data Found</h2>
+        <p>Please upload your resume first.</p>
+        <button onClick={() => navigate("/upload")}>
+          Upload Resume
+        </button>
+      </div>
+    );
+  }
+  
 
   return (
-    <div className="result-page">
-      <div className="result-heading">
-        <span className="result-tag">AI RESUME ANALYZER</span>
-        <h1>Your Resume Analysis</h1>
+    <div className="result-container">
+      <h1>Resume Analysis</h1>
+
+      <div className="result-card">
+        <h2>Uploaded Resume</h2>
         <p>
-          Review your resume score, skills match, and
-          suggestions to improve your profile.
+          <strong>File Name:</strong> {fileName}
         </p>
       </div>
 
-      <div className="result-container">
-        <div className="score-card">
-          <div className="score-circle">
-            <div>
-              <h2>85</h2>
-              <span>/100</span>
-            </div>
-          </div>
+      <div className="result-card">
+        <h2>Job Description</h2>
+        <p>{jobDescription}</p>
+      </div>
 
-          <h3>Good Resume Score!</h3>
-          <p>
-            Your resume has a good foundation.
-            A few improvements can make it stronger.
-          </p>
-        </div>
-
-        <div className="result-card">
-          <h2>Skills Analysis</h2>
-          <p className="result-description">
-            Skills identified in your resume and
-            skills you may need to add.
-          </p>
-
-          <div className="skills-section">
-            <h3>✓ Matched Skills</h3>
-
-            <div className="skill-list">
-              {matchedSkills.map((skill) => (
-                <span className="matched-skill" key={skill}>
-                  ✓ {skill}
-                </span>
-              ))}
-            </div>
-          </div>
-
-          <div className="skills-section">
-            <h3>＋ Skills to Improve</h3>
-
-            <div className="skill-list">
-              {missingSkills.map((skill) => (
-                <span className="missing-skill" key={skill}>
-                  + {skill}
-                </span>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        <div className="result-card suggestions-card">
-          <h2>AI Improvement Suggestions</h2>
-          <p className="result-description">
-            Follow these suggestions to improve your resume.
-          </p>
-
-          <div className="suggestion-list">
-            {suggestions.map((suggestion, index) => (
-              <div className="suggestion-item" key={suggestion}>
-                <span className="suggestion-number">
-                  {index + 1}
-                </span>
-
-                <p>{suggestion}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="result-actions">
-          <button
-            className="back-btn"
-            onClick={() => window.history.back()}
-          >
-            ← Back
-          </button>
-
-          <button
-            className="download-btn"
-            onClick={() => window.print()}
-          >
-            Print Report ↓
-          </button>
+      <div className="result-card">
+        <h2>Extracted Resume Text</h2>
+        <div className="resume-text">
+          {resumeText}
         </div>
       </div>
 
-      <p className="demo-note">
-        Demo report — scores and suggestions are sample data.
-      </p>
+      <button onClick={() => navigate("/upload")}>
+        Analyze Another Resume
+      </button>
     </div>
   );
 }
