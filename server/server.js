@@ -1,8 +1,15 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import multer from "multer";
+import pdfParse from "pdf-parse";
+import { GoogleGenAI } from "@google/genai";
 
 dotenv.config();
+
+const ai = new GoogleGenAI({
+  apiKey: process.env.GEMINI_API_KEY,
+});
 
 const app = express();
 
@@ -72,4 +79,58 @@ app.use((err, req, res, next) => {
   }
 
   next(err);
+});
+
+
+app.post("/api/resume/analyze", async (req, res) => {
+  try {
+    const { resumeText, jobDescription } = req.body;
+
+    if (!resumeText || !jobDescription) {
+      return res.status(400).json({
+        message: "Resume text and job description are required.",
+      });
+    }
+
+    const response = await ai.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents: `
+Analyze this resume against the job description.
+
+Resume:
+${resumeText}
+
+Job Description:
+${jobDescription}
+
+Return only valid JSON in this format:
+{
+  "score": 75,
+  "matchedSkills": ["React", "JavaScript"],
+  "missingSkills": ["Docker"],
+  "suggestions": [
+    "Add measurable achievements to projects.",
+    "Highlight relevant technical skills.",
+    "Improve project descriptions."
+  ]
+}
+
+Give a score between 0 and 100.
+Do not invent qualifications or experience.
+`,
+      config: {
+        responseMimeType: "application/json",
+      },
+    });
+
+    const analysis = JSON.parse(response.text);
+
+    res.json(analysis);
+  } catch (error) {
+    console.error("AI analysis error:", error);
+
+    res.status(500).json({
+      message: "Failed to analyze resume. Please try again.",
+    });
+  }
 });
