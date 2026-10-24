@@ -46,13 +46,14 @@ function UploadResume() {
       return;
     }
 
-    const formData = new FormData();
-    formData.append("resume", file);
-
     setLoading(true);
 
     try {
-      const response = await fetch(
+
+      const formData = new FormData();
+      formData.append("resume", file);
+
+      const uploadResponse = await fetch(
         "http://localhost:5000/api/resume/upload",
         {
           method: "POST",
@@ -60,23 +61,50 @@ function UploadResume() {
         }
       );
 
-      const data = await response.json();
+      const uploadData = await uploadResponse.json();
 
-      if (!response.ok) {
-        throw new Error(data.message || "Resume upload failed.");
+      if (!uploadResponse.ok) {
+        throw new Error(
+          uploadData.message || "Resume upload failed."
+        );
       }
 
+      // Step 2: Send resume text to Gemini AI
+      const analysisResponse = await fetch(
+        "http://localhost:5000/api/resume/analyze",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            resumeText: uploadData.text,
+            jobDescription: jobDescription,
+          }),
+        }
+      );
+
+      const analysisData = await analysisResponse.json();
+
+      if (!analysisResponse.ok) {
+        throw new Error(
+          analysisData.message || "Resume analysis failed."
+        );
+      }
+
+      // Step 3: Open results page with actual AI results
       navigate("/results", {
         state: {
-          resumeText: data.text,
-          fileName: data.fileName,
-          jobDescription,
+          resumeText: uploadData.text,
+          fileName: uploadData.fileName,
+          jobDescription: jobDescription,
+          analysis: analysisData,
         },
       });
     } catch (err) {
       setError(
         err.message === "Failed to fetch"
-          ? "Cannot connect to the server. Please check whether your backend is running."
+          ? "Cannot connect to the server. Check your backend."
           : err.message
       );
     } finally {
