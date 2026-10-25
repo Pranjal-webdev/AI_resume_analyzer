@@ -5,43 +5,106 @@ function AnalysisResult() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const { resumeText, fileName, jobDescription } = location.state || {};
+  const { resumeText, fileName, jobDescription, analysis } = location.state || {};
 
-  if (!resumeText) {
+  if (!analysis) {
     return (
       <div className="result-container">
-        <h2>No Resume Data Found</h2>
-        <p>Please upload your resume first.</p>
+        <h2>No Analysis Found</h2>
+        <p>Please upload your resume and analyze it first.</p>
+
         <button onClick={() => navigate("/upload")}>
           Upload Resume
         </button>
       </div>
     );
   }
-  
+
+  const {
+    score,
+    matchedSkills = [],
+    missingSkills = [],
+    suggestions = [],
+  } = analysis;
 
   return (
     <div className="result-container">
-      <h1>Resume Analysis</h1>
+      <h1>Resume Analysis Results</h1>
 
-      <div className="result-card">
-        <h2>Uploaded Resume</h2>
+      <p className="result-file">
+        Analyzed file: <strong>{fileName}</strong>
+      </p>
+
+      <div className="result-card score-card">
+        <h2>Resume Match Score</h2>
+
+        <div className="score-circle">
+          <span>{score}%</span>
+        </div>
+
         <p>
-          <strong>File Name:</strong> {fileName}
+          Your resume matches approximately {score}% of the job
+          requirements.
         </p>
       </div>
 
       <div className="result-card">
-        <h2>Job Description</h2>
-        <p>{jobDescription}</p>
+        <h2>Matched Skills</h2>
+
+        {matchedSkills.length > 0 ? (
+          <div className="skills-list">
+            {matchedSkills.map((skill, index) => (
+              <span className="skill-tag matched" key={index}>
+                {skill}
+              </span>
+            ))}
+          </div>
+        ) : (
+          <p>No matched skills were identified.</p>
+        )}
       </div>
 
       <div className="result-card">
-        <h2>Extracted Resume Text</h2>
+        <h2>Missing Skills</h2>
+
+        {missingSkills.length > 0 ? (
+          <div className="skills-list">
+            {missingSkills.map((skill, index) => (
+              <span className="skill-tag missing" key={index}>
+                {skill}
+              </span>
+            ))}
+          </div>
+        ) : (
+          <p>No missing skills were identified.</p>
+        )}
+      </div>
+
+      <div className="result-card">
+        <h2>Improvement Suggestions</h2>
+
+        {suggestions.length > 0 ? (
+          <ul className="suggestions-list">
+            {suggestions.map((suggestion, index) => (
+              <li key={index}>{suggestion}</li>
+            ))}
+          </ul>
+        ) : (
+          <p>No suggestions available.</p>
+        )}
+      </div>
+
+      <details className="result-card">
+        <summary>View Extracted Resume Text</summary>
         <div className="resume-text">
           {resumeText}
         </div>
-      </div>
+      </details>
+
+      <details className="result-card">
+        <summary>View Job Description</summary>
+        <p>{jobDescription}</p>
+      </details>
 
       <button onClick={() => navigate("/upload")}>
         Analyze Another Resume

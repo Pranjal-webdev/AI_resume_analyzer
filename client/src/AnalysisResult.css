@@ -49,3 +49,67 @@
 .result-container button:hover {
   background: #4338ca;
 }
+
+
+.score-card {
+  text-align: center;
+}
+
+.score-circle {
+  width: 130px;
+  height: 130px;
+  border: 8px solid #4f46e5;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 20px auto;
+}
+
+.score-circle span {
+  font-size: 30px;
+  font-weight: bold;
+  color: #4f46e5;
+}
+
+.skills-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.skill-tag {
+  padding: 8px 12px;
+  border-radius: 20px;
+  font-size: 14px;
+}
+
+.skill-tag.matched {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.skill-tag.missing {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.suggestions-list {
+  padding-left: 22px;
+  line-height: 1.8;
+}
+
+.result-file {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.result-card summary {
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.result-card details {
+  margin-top: 10px;
+}
