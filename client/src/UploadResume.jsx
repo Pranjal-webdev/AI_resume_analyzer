@@ -112,6 +112,9 @@ function UploadResume() {
     }
   };
 
+  if (loading) {
+  return <AnalysisLoader />;
+}
 
   return (
     <div className="upload-page">
