@@ -1,0 +1,77 @@
+
+.score-breakdown {
+  margin: 30px 0;
+  color: #1f2937;
+}
+
+.score-breakdown h2 {
+  margin-bottom: 8px;
+}
+
+.breakdown-subtitle {
+  color: #6b7280;
+  margin-bottom: 22px;
+  line-height: 1.6;
+}
+
+.breakdown-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  margin-bottom: 20px;
+}
+
+.breakdown-card {
+  padding: 22px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  margin-bottom: 18px;
+  overflow-wrap: anywhere;
+}
+
+.breakdown-card h3 {
+  margin-top: 0;
+  font-size: 17px;
+}
+
+.breakdown-value {
+  font-size: 30px;
+  font-weight: 700;
+  color: #4f46e5;
+  margin: 14px 0;
+}
+
+.progress-track {
+  height: 9px;
+  background: #e5e7eb;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: #4f46e5;
+  border-radius: 10px;
+  transition: width 0.4s ease;
+}
+
+.breakdown-card p {
+  color: #6b7280;
+  line-height: 1.6;
+}
+
+.breakdown-list ul {
+  padding-left: 22px;
+  line-height: 1.9;
+}
+
+@media (max-width: 600px) {
+  .breakdown-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .breakdown-card {
+    padding: 18px;
+  }
+}

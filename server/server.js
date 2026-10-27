@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import multer from "multer";
-import pdfParse from "pdf-parse";
+import { PDFParse } from "pdf-parse";
 import { GoogleGenAI } from "@google/genai";
 
 dotenv.config();
@@ -44,9 +44,14 @@ app.post("/api/resume/upload", upload.single("resume"), async (req, res) => {
       });
     }
 
-    const pdfData = await pdfParse(req.file.buffer);
+    const parser = new PDFParse({
+      data: req.file.buffer,
+    });
+
+    const pdfData = await parser.getText();
     const resumeText = pdfData.text.trim();
 
+    await parser.destroy();
     if (!resumeText) {
       return res.status(400).json({
         message: "No readable text found in the PDF.",

@@ -64,6 +64,8 @@ function AnalysisResult() {
         )}
       </div>
 
+      <ScoreBreakdown analysis={analysis} />
+
       <div className="result-card">
         <h2>Missing Skills</h2>
 
