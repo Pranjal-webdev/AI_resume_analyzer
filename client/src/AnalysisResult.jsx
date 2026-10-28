@@ -1,5 +1,7 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import "./AnalysisResult.css";
+import DownloadReport from "./DownloadReport";
+import ScoreBreakdown from "./ScoreBreakdown";
 
 function AnalysisResult() {
   const location = useLocation();
@@ -107,6 +109,11 @@ function AnalysisResult() {
         <summary>View Job Description</summary>
         <p>{jobDescription}</p>
       </details>
+
+      <DownloadReport
+        analysis={analysis}
+        fileName={fileName}
+      />
 
       <button onClick={() => navigate("/upload")}>
         Analyze Another Resume
