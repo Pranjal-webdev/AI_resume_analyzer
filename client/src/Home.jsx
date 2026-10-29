@@ -1,7 +1,11 @@
 import { Link } from "react-router-dom";
 import "./App.css";
+import { useNavigate } from "react-router-dom";
 
 function Home() {
+
+  const navigate = useNavigate();
+
   return (
     <div className="home">
       <nav className="navbar">
@@ -157,6 +161,11 @@ function Home() {
             <h3>Improve & Apply</h3>
             <p>Use the insights to prepare for your next opportunity.</p>
           </div>
+
+          <button onClick={() => navigate("/history")}>
+            View Analysis History
+          </button>
+
         </div>
       </section>
 

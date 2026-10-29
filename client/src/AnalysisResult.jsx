@@ -2,12 +2,38 @@ import { useLocation, useNavigate } from "react-router-dom";
 import "./AnalysisResult.css";
 import DownloadReport from "./DownloadReport";
 import ScoreBreakdown from "./ScoreBreakdown";
+import { useEffect } from "react";
 
 function AnalysisResult() {
   const location = useLocation();
   const navigate = useNavigate();
 
   const { resumeText, fileName, jobDescription, analysis } = location.state || {};
+
+  useEffect(() => {
+    if (!analysis) return;
+
+    const savedHistory = JSON.parse(
+      localStorage.getItem("resumeHistory") || "[]"
+    );
+
+    const newEntry = {
+      id: Date.now(),
+      fileName: fileName || "Resume",
+      score: analysis.score,
+      resumeText,
+      jobDescription,
+      analysis,
+      date: new Date().toLocaleString(),
+    };
+
+    const updatedHistory = [newEntry, ...savedHistory].slice(0, 10);
+
+    localStorage.setItem(
+      "resumeHistory",
+      JSON.stringify(updatedHistory)
+    );
+  }, [analysis, fileName, resumeText, jobDescription]);
 
   if (!analysis) {
     return (

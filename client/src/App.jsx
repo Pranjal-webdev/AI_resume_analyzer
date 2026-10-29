@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./Home";
 import UploadResume from "./UploadResume";
 import AnalysisResult from "./AnalysisResult";
+import History from "./History";
 
 function App() {
   return (
@@ -10,6 +11,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/upload" element={<UploadResume />} />
         <Route path="/results" element={<AnalysisResult />} />
+        <Route path="/history" element={<History />} />
       </Routes>
     </BrowserRouter>
   )
