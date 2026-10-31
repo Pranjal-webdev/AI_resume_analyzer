@@ -3,6 +3,7 @@ import "./AnalysisResult.css";
 import DownloadReport from "./DownloadReport";
 import ScoreBreakdown from "./ScoreBreakdown";
 import { useEffect } from "react";
+import ShareReport from "./ShareReport";
 
 function AnalysisResult() {
   const location = useLocation();
@@ -137,6 +138,11 @@ function AnalysisResult() {
       </details>
 
       <DownloadReport
+        analysis={analysis}
+        fileName={fileName}
+      />
+
+      <ShareReport
         analysis={analysis}
         fileName={fileName}
       />

@@ -130,3 +130,20 @@
 .download-report-btn:hover {
   background: #4338ca;
 }
+
+.share-report-btn {
+  display: block;
+  margin: 15px auto;
+  padding: 12px 24px;
+  background: #059669;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.share-report-btn:hover {
+  background: #047857;
+}
