@@ -4,6 +4,7 @@ import DownloadReport from "./DownloadReport";
 import ScoreBreakdown from "./ScoreBreakdown";
 import { useEffect } from "react";
 import ShareReport from "./ShareReport";
+import ScoreFeedback from "./ScoreFeedback";
 
 function AnalysisResult() {
   const location = useLocation();
@@ -76,6 +77,8 @@ function AnalysisResult() {
           requirements.
         </p>
       </div>
+
+      <ScoreFeedback score={score} />
 
       <div className="result-card">
         <h2>Matched Skills</h2>

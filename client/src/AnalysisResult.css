@@ -147,3 +147,41 @@
 .share-report-btn:hover {
   background: #047857;
 }
+
+
+.score-feedback {
+  padding: 20px;
+  margin: 20px 0;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+}
+
+.score-feedback h2 {
+  margin-top: 0;
+  font-size: 20px;
+}
+
+.score-feedback p {
+  line-height: 1.6;
+  margin-bottom: 0;
+}
+
+.score-feedback.excellent {
+  background: #ecfdf5;
+  border-color: #a7f3d0;
+}
+
+.score-feedback.good {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+}
+
+.score-feedback.average {
+  background: #fffbeb;
+  border-color: #fde68a;
+}
+
+.score-feedback.low {
+  background: #fef2f2;
+  border-color: #fecaca;
+}
