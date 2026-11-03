@@ -29,6 +29,23 @@ function ScoreBreakdown({ analysis }) {
       ? Math.round((matchedSkills.length / totalSkills) * 100)
       : 0;
 
+  const copyMissingSkills = async () => {
+    if (missingSkills.length === 0) {
+      alert("No missing skills to copy!");
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(
+        missingSkills.join(", ")
+      );
+
+      alert("Missing skills copied successfully!");
+    } catch (error) {
+      alert("Unable to copy skills.");
+    }
+  };
+
   return (
     <section className="score-breakdown">
       <h2>Score Breakdown</h2>
@@ -56,12 +73,24 @@ function ScoreBreakdown({ analysis }) {
           <p>Skills identified in your resume</p>
         </div>
 
-        <div className="breakdown-card">
-          <h3>Missing Skills</h3>
-          <div className="breakdown-value">
-            {missingSkills.length}
-          </div>
-          <p>Skills to review for this role</p>
+        <div className="breakdown-card breakdown-list">
+          <h3>Skills to Improve</h3>
+
+          {missingSkills.length > 0 ? (
+            <>
+              <ul>
+                {missingSkills.map((skill, index) => (
+                  <li key={`${skill}-${index}`}>{skill}</li>
+                ))}
+              </ul>
+
+              <button onClick={copyMissingSkills}>
+                Copy Missing Skills
+              </button>
+            </>
+          ) : (
+            <p>No missing skills were identified.</p>
+          )}
         </div>
 
         <div className="breakdown-card">
