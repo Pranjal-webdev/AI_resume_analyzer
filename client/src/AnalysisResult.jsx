@@ -5,6 +5,7 @@ import ScoreBreakdown from "./ScoreBreakdown";
 import { useEffect } from "react";
 import ShareReport from "./ShareReport";
 import ScoreFeedback from "./ScoreFeedback";
+import PrintReport from "./PrintReport";
 
 function AnalysisResult() {
   const location = useLocation();
@@ -149,6 +150,8 @@ function AnalysisResult() {
         analysis={analysis}
         fileName={fileName}
       />
+
+      <PrintReport />
 
       <button onClick={() => navigate("/upload")}>
         Analyze Another Resume

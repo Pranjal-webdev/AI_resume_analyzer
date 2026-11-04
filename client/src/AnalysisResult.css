@@ -185,3 +185,43 @@
   background: #fef2f2;
   border-color: #fecaca;
 }
+.print-report-btn {
+  display: block;
+  margin: 15px auto;
+  padding: 12px 24px;
+  background: #374151;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.print-report-btn:hover {
+  background: #1f2937;
+}
+
+@media print {
+  .print-report-btn,
+  .download-report-btn,
+  .share-report-btn,
+  .result-container > button {
+    display: none !important;
+  }
+
+  .result-container {
+    width: 100%;
+    margin: 0;
+    padding: 10px;
+  }
+
+  .result-card {
+    break-inside: avoid;
+    box-shadow: none;
+  }
+
+  body {
+    background: white;
+  }
+}
