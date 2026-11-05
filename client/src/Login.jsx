@@ -21,7 +21,7 @@ const Login = ({ onRegister, onLoginSuccess }) => {
             localStorage.removeItem("userId");
 
             const response = await axios.post(
-                "https://real-time-chat-app-backend-1qh4.onrender.com/api/auth/login",
+                "http://localhost:5000/api/auth/login",
                 {
                     email,
                     password,
@@ -30,14 +30,9 @@ const Login = ({ onRegister, onLoginSuccess }) => {
 
             const { token, user } = response.data;
 
-            console.log("LOGIN USER:", user);
-
             localStorage.setItem("token", token);
-            localStorage.setItem("userId", user._id || user.id);
-            localStorage.setItem("userName", user.name);
-            localStorage.setItem("profileImage", user.profileImage || "");
-
-            onLoginSuccess();
+            localStorage.setItem("userId", user._id);
+            navigate("/");
 
         } catch (error) {
             console.error(
@@ -64,7 +59,7 @@ const Login = ({ onRegister, onLoginSuccess }) => {
                 </h1>
 
                 <p className="text-center text-gray-500 mt-2 mb-8">
-                    Login to continue chatting
+                    Login to your Resume Analyzer account
                 </p>
 
                 {error && (
