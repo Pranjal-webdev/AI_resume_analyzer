@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import multer from "multer";
 import { PDFParse } from "pdf-parse";
 import { GoogleGenAI } from "@google/genai";
+import User from "./models/User.js";
 
 dotenv.config();
 
@@ -15,6 +16,85 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
+
+const connectDB = async () => {
+    try {
+        await mongoose.connect(process.env.MONGODB_URI);
+        console.log("MongoDB Connected Successfully!");
+    } catch (error) {
+        console.error("MongoDB Connection Error:", error.message);
+        process.exit(1);
+    }
+};
+
+
+app.get("/", (req, res) => {
+    res.json({
+        message: "AI Resume Analyzer API is running!",
+    });
+});
+
+
+app.post("/api/auth/register", async (req, res) => {
+    try {
+        const { name, email, password } = req.body;
+
+        if (!name || !email || !password) {
+            return res.status(400).json({
+                message: "All fields are required.",
+            });
+        }
+
+        if (password.length < 6) {
+            return res.status(400).json({
+                message: "Password must be at least 6 characters.",
+            });
+        }
+
+        const normalizedEmail = email.trim().toLowerCase();
+
+        const existingUser = await User.findOne({
+            email: normalizedEmail,
+        });
+
+        if (existingUser) {
+            return res.status(409).json({
+                message: "Email already registered.",
+            });
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const newUser = await User.create({
+            name: name.trim(),
+            email: normalizedEmail,
+            password: hashedPassword,
+        });
+
+        res.status(201).json({
+            message: "Account created successfully!",
+            user: {
+                _id: newUser._id,
+                name: newUser.name,
+                email: newUser.email,
+            },
+        });
+
+    } catch (error) {
+        console.error("Signup Error:", error);
+
+        if (error.code === 11000) {
+            return res.status(409).json({
+                message: "Email already registered.",
+            });
+        }
+
+        res.status(500).json({
+            message: "Registration failed. Please try again.",
+        });
+    }
+});
+
 
 const storage = multer.memoryStorage();
 
@@ -139,3 +219,37 @@ Do not invent qualifications or experience.
     });
   }
 });
+
+
+app.use((err, req, res, next) => {
+    if (err instanceof multer.MulterError && err.code === "LIMIT_FILE_SIZE") {
+        return res.status(400).json({
+            message: "Resume must be smaller than 5 MB.",
+        });
+    }
+
+    if (err.message === "Only PDF files are allowed.") {
+        return res.status(400).json({
+            message: err.message,
+        });
+    }
+
+    console.error("Server Error:", err);
+
+    res.status(500).json({
+        message: "Something went wrong.",
+    });
+});
+
+
+const PORT = process.env.PORT || 5000;
+
+const startServer = async () => {
+    await connectDB();
+
+    app.listen(PORT, () => {
+        console.log(`Server running on port ${PORT}`);
+    });
+};
+
+startServer();

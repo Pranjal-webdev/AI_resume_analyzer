@@ -1,4 +1,3 @@
-
 function ShareReport({ analysis, fileName }) {
   const shareReport = async () => {
     const shareText = `

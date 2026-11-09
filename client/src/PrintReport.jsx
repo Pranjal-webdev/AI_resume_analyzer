@@ -1,4 +1,3 @@
-
 function PrintReport() {
   const handlePrint = () => {
     window.print();

@@ -1,4 +1,3 @@
-
 import jsPDF from "jspdf";
 
 function DownloadReport({ analysis, fileName }) {
