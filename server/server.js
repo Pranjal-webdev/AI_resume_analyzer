@@ -5,6 +5,7 @@ import multer from "multer";
 import { PDFParse } from "pdf-parse";
 import { GoogleGenAI } from "@google/genai";
 import User from "./models/User.js";
+import jwt from "jsonwebtoken";
 
 dotenv.config();
 
@@ -18,81 +19,138 @@ app.use(cors());
 app.use(express.json());
 
 const connectDB = async () => {
-    try {
-        await mongoose.connect(process.env.MONGODB_URI);
-        console.log("MongoDB Connected Successfully!");
-    } catch (error) {
-        console.error("MongoDB Connection Error:", error.message);
-        process.exit(1);
-    }
+  try {
+    await mongoose.connect(process.env.MONGODB_URI);
+    console.log("MongoDB Connected Successfully!");
+  } catch (error) {
+    console.error("MongoDB Connection Error:", error.message);
+    process.exit(1);
+  }
 };
 
 
 app.get("/", (req, res) => {
-    res.json({
-        message: "AI Resume Analyzer API is running!",
-    });
+  res.json({
+    message: "AI Resume Analyzer API is running!",
+  });
 });
 
 
 app.post("/api/auth/register", async (req, res) => {
-    try {
-        const { name, email, password } = req.body;
+  try {
+    const { name, email, password } = req.body;
 
-        if (!name || !email || !password) {
-            return res.status(400).json({
-                message: "All fields are required.",
-            });
-        }
-
-        if (password.length < 6) {
-            return res.status(400).json({
-                message: "Password must be at least 6 characters.",
-            });
-        }
-
-        const normalizedEmail = email.trim().toLowerCase();
-
-        const existingUser = await User.findOne({
-            email: normalizedEmail,
-        });
-
-        if (existingUser) {
-            return res.status(409).json({
-                message: "Email already registered.",
-            });
-        }
-
-        const hashedPassword = await bcrypt.hash(password, 10);
-
-        const newUser = await User.create({
-            name: name.trim(),
-            email: normalizedEmail,
-            password: hashedPassword,
-        });
-
-        res.status(201).json({
-            message: "Account created successfully!",
-            user: {
-                _id: newUser._id,
-                name: newUser.name,
-                email: newUser.email,
-            },
-        });
-
-    } catch (error) {
-        console.error("Signup Error:", error);
-
-        if (error.code === 11000) {
-            return res.status(409).json({
-                message: "Email already registered.",
-            });
-        }
-
-        res.status(500).json({
-            message: "Registration failed. Please try again.",
-        });
+    if (!name || !email || !password) {
+      return res.status(400).json({
+        message: "All fields are required.",
+      });
     }
+
+    if (password.length < 6) {
+      return res.status(400).json({
+        message: "Password must be at least 6 characters.",
+      });
+    }
+
+    const normalizedEmail = email.trim().toLowerCase();
+
+    const existingUser = await User.findOne({
+      email: normalizedEmail,
+    });
+
+    if (existingUser) {
+      return res.status(409).json({
+        message: "Email already registered.",
+      });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const newUser = await User.create({
+      name: name.trim(),
+      email: normalizedEmail,
+      password: hashedPassword,
+    });
+
+    res.status(201).json({
+      message: "Account created successfully!",
+      user: {
+        _id: newUser._id,
+        name: newUser.name,
+        email: newUser.email,
+      },
+    });
+
+  } catch (error) {
+    console.error("Signup Error:", error);
+
+    if (error.code === 11000) {
+      return res.status(409).json({
+        message: "Email already registered.",
+      });
+    }
+
+    res.status(500).json({
+      message: "Registration failed. Please try again.",
+    });
+  }
+});
+
+
+app.post("/api/auth/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({
+        message: "Email and password are required.",
+      });
+    }
+
+    const user = await User.findOne({
+      email: email.trim().toLowerCase(),
+    });
+
+    if (!user) {
+      return res.status(401).json({
+        message: "Invalid email or password.",
+      });
+    }
+
+    const isPasswordCorrect = await bcrypt.compare(
+      password,
+      user.password
+    );
+
+    if (!isPasswordCorrect) {
+      return res.status(401).json({
+        message: "Invalid email or password.",
+      });
+    }
+
+    const token = jwt.sign(
+      { userId: user._id },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" }
+    );
+
+    res.status(200).json({
+      message: "Login successful!",
+      token,
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+      },
+    });
+
+  } catch (error) {
+    console.error("Login Error:", error);
+
+    res.status(500).json({
+      message: "Login failed. Please try again.",
+    });
+  }
 });
 
 
@@ -222,34 +280,34 @@ Do not invent qualifications or experience.
 
 
 app.use((err, req, res, next) => {
-    if (err instanceof multer.MulterError && err.code === "LIMIT_FILE_SIZE") {
-        return res.status(400).json({
-            message: "Resume must be smaller than 5 MB.",
-        });
-    }
-
-    if (err.message === "Only PDF files are allowed.") {
-        return res.status(400).json({
-            message: err.message,
-        });
-    }
-
-    console.error("Server Error:", err);
-
-    res.status(500).json({
-        message: "Something went wrong.",
+  if (err instanceof multer.MulterError && err.code === "LIMIT_FILE_SIZE") {
+    return res.status(400).json({
+      message: "Resume must be smaller than 5 MB.",
     });
+  }
+
+  if (err.message === "Only PDF files are allowed.") {
+    return res.status(400).json({
+      message: err.message,
+    });
+  }
+
+  console.error("Server Error:", err);
+
+  res.status(500).json({
+    message: "Something went wrong.",
+  });
 });
 
 
 const PORT = process.env.PORT || 5000;
 
 const startServer = async () => {
-    await connectDB();
+  await connectDB();
 
-    app.listen(PORT, () => {
-        console.log(`Server running on port ${PORT}`);
-    });
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
 };
 
 startServer();
