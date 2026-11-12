@@ -6,6 +6,7 @@ import { PDFParse } from "pdf-parse";
 import { GoogleGenAI } from "@google/genai";
 import User from "./models/User.js";
 import jwt from "jsonwebtoken";
+import authMiddleware from "./middleware/authMiddleware.jsx";
 
 dotenv.config();
 
@@ -174,7 +175,7 @@ app.get("/", (req, res) => {
   res.json({ message: "AI Resume Analyzer API is running!" });
 });
 
-app.post("/api/resume/upload", upload.single("resume"), async (req, res) => {
+app.post("/api/resume/upload", authMiddleware, upload.single("resume"), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({
@@ -225,7 +226,7 @@ app.use((err, req, res, next) => {
 });
 
 
-app.post("/api/resume/analyze", async (req, res) => {
+app.post("/api/resume/analyze", authMiddleware, async (req, res) => {
   try {
     const { resumeText, jobDescription } = req.body;
 

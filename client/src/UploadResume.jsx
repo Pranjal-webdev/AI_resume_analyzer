@@ -57,6 +57,9 @@ function UploadResume() {
         "http://localhost:5000/api/resume/upload",
         {
           method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
           body: formData,
         }
       );
@@ -69,13 +72,13 @@ function UploadResume() {
         );
       }
 
-      // Step 2: Send resume text to Gemini AI
       const analysisResponse = await fetch(
         "http://localhost:5000/api/resume/analyze",
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
             resumeText: uploadData.text,
@@ -92,7 +95,6 @@ function UploadResume() {
         );
       }
 
-      // Step 3: Open results page with actual AI results
       navigate("/results", {
         state: {
           resumeText: uploadData.text,
@@ -113,8 +115,8 @@ function UploadResume() {
   };
 
   if (loading) {
-  return <AnalysisLoader />;
-}
+    return <AnalysisLoader />;
+  }
 
   return (
     <div className="upload-page">
