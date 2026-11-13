@@ -32,7 +32,7 @@ const Login = ({ onRegister, onLoginSuccess }) => {
 
             localStorage.setItem("token", token);
             localStorage.setItem("userId", user._id);
-            navigate("/");
+            navigate("/home");
 
         } catch (error) {
             console.error(
