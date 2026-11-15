@@ -1,15 +1,28 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./App.css";
-import { useNavigate } from "react-router-dom";
 
 function Home() {
 
   const navigate = useNavigate();
 
+  const userName = localStorage.getItem("userName") || "User";
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("userId");
+    localStorage.removeItem("userName");
+    localStorage.removeItem("profileImage");
+
+    navigate("/login", { replace: true });
+  };
+
   return (
     <div className="home">
       <nav className="navbar">
         <h2 className="logo">ResumeAI</h2>
+        <span className="welcome-user">
+          Hi, {userName}!
+        </span>
 
         <div className="nav-links">
           <a href="#features">Features</a>
@@ -17,6 +30,12 @@ function Home() {
           <Link to="/upload" className="nav-btn">
             Get Started
           </Link>
+          <button
+            onClick={handleLogout}
+            className="nav-btn"
+          >
+            Logout
+          </button>
         </div>
       </nav>
 
