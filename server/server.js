@@ -7,6 +7,8 @@ import { GoogleGenAI } from "@google/genai";
 import User from "./models/User.js";
 import jwt from "jsonwebtoken";
 import authMiddleware from "./middleware/authMiddleware.jsx";
+import nodemailer from "nodemailer";
+import crypto from "crypto";
 
 dotenv.config();
 
@@ -18,6 +20,14 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
+
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+});
 
 const connectDB = async () => {
   try {
@@ -224,6 +234,121 @@ app.use((err, req, res, next) => {
 
   next(err);
 });
+
+app.post("/api/auth/forgot-password", async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({
+        message: "Email is required.",
+      });
+    }
+
+    const user = await User.findOne({
+      email: email.trim().toLowerCase(),
+    });
+
+    if (!user) {
+      return res.json({
+        message: "If the email is registered, a reset link will be sent.",
+      });
+    }
+
+    const resetToken = crypto.randomBytes(32).toString("hex");
+
+    user.passwordResetToken = crypto
+      .createHash("sha256")
+      .update(resetToken)
+      .digest("hex");
+
+    user.passwordResetExpires = Date.now() + 15 * 60 * 1000;
+
+    await user.save();
+
+    const resetUrl =
+      `${process.env.CLIENT_URL}/reset-password/${resetToken}`;
+
+    try {
+      await transporter.sendMail({
+        from: process.env.EMAIL_USER,
+        to: user.email,
+        subject: "Reset Your Resume Analyzer Password",
+        html: `
+                    <h2>Password Reset Request</h2>
+                    <p>Click the link below to reset your password.</p>
+                    <a href="${resetUrl}">Reset Password</a>
+                    <p>This link expires in 15 minutes.</p>
+                `,
+      });
+    } catch (emailError) {
+      user.passwordResetToken = undefined;
+      user.passwordResetExpires = undefined;
+      await user.save();
+
+      throw emailError;
+    }
+
+    return res.json({
+      message: "If the email is registered, a reset link will be sent.",
+    });
+
+  } catch (error) {
+    console.error("Forgot Password Error:", error);
+
+    return res.status(500).json({
+      message: "Unable to process password reset request.",
+    });
+  }
+});
+
+
+app.post("/api/auth/reset-password/:token", async (req, res) => {
+  try {
+    const { token } = req.params;
+    const { password } = req.body;
+
+    if (!password || password.length < 6) {
+      return res.status(400).json({
+        message: "Password must be at least 6 characters long.",
+      });
+    }
+    const hashedToken = crypto
+      .createHash("sha256")
+      .update(token)
+      .digest("hex");
+    const user = await User.findOne({
+      passwordResetToken: hashedToken,
+      passwordResetExpires: { $gt: Date.now() },
+    });
+
+    if (!user) {
+      return res.status(400).json({
+        message: "Reset link is invalid or expired.",
+      });
+    }
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    user.password = hashedPassword;
+
+    user.passwordResetToken = undefined;
+    user.passwordResetExpires = undefined;
+
+    await user.save();
+
+    return res.json({
+      message: "Password reset successful. Please login.",
+    });
+
+  } catch (error) {
+    console.error("Reset Password Error:", error);
+
+    return res.status(500).json({
+      message: "Unable to reset password.",
+    });
+  }
+});
+
 
 
 app.post("/api/resume/analyze", authMiddleware, async (req, res) => {
