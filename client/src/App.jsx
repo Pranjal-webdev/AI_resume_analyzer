@@ -6,6 +6,7 @@ import History from "./History";
 import Login from "./Login";
 import Register from "./Register";
 import ProtectedRoute from "./ProtectedRoute";
+import ForgotPassword from "./ForgotPassword";
 
 function LoginPage() {
   const navigate = useNavigate();
@@ -25,6 +26,7 @@ function App() {
         <Route path="/" element={<Navigate to="/login" replace />} />
 
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/register" element={<Register />} />
 
         <Route element={<ProtectedRoute />}>

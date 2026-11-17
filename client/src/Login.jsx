@@ -1,5 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
+import { Link } from "react-router-dom";
 
 const Login = ({ onRegister, onLoginSuccess }) => {
 
@@ -107,6 +108,12 @@ const Login = ({ onRegister, onLoginSuccess }) => {
                             required
                             className="w-full border border-gray-300 rounded-xl px-4 py-3 outline-none focus:border-blue-500"
                         />
+                    </div>
+
+                    <div className="forgot-password-link">
+                        <Link to="/forgot-password">
+                            Forgot Password?
+                        </Link>
                     </div>
 
                     <button
